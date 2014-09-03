@@ -1,33 +1,52 @@
 <!DOCTYPE html>
 <html>
 
+<head>
+    <link rel="stylesheet" href="lib/morris-0.5.1.css">
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/raphael-min.js"></script>
+    <script src="lib/morris.min.js"></script>
+</head>
+
 <body>
+    <div id="tempChart" style="height: 500px;"></div>
 
-    <div ng-app="recipeEditor" ng-controller="recipeEditorCtrl">
-        <p>
-            <span>Hop:</span>
-            <input type="number" min="1" max="10000" ng-model="hopQty" />
-            <span>g</span>
-        </p>
+    <script type="text/javascript">
+    $.getJSON("http://192.168.1.110:3551/temperatures/100000", function(x) {
+        data = x.records; // use data as a generic object 
+        var data;
+        var start = new Date(data[0].timestamp);
+        var chart = new Morris.Line({
+            // ID of the element in which to draw the chart.
+            element: 'tempChart',
+            // Chart data records -- each entry in this array corresponds to a point on
+            // the chart.
+            data: data,
+            // The name of the data record attribute that contains x-values.
+            xkey: 'timestamp',
+            // A list of names of data record attributes that contain y-values.
+            ykeys: ['temperature'],
+            // Labels for the ykeys -- will be displayed when you hover over the
+            // chart.
+            labels: ['Actual Temperature'],
+            postUnits: [' °C'],
+            lineColors: ['#000000'],
+            //events: ['2014-09-02 19:00:00', '2014-09-02 19:00:08'],
+            goals: [52, 68],
+            xLabelFormat: function(x) {
+                var pad = '00';
+                var elapsed = x - start;
+                var hours = Math.floor(elapsed/1000/60/60);
+                var minutes = (pad+Math.floor(elapsed / 1000 / 60)%60).slice(-pad.length);
+                var seconds = (pad+Math.floor((elapsed / 1000) % 60)).slice(-pad.length);
 
-        <p>
-            <span>Malt:</span>
-            <input type="number" min="1" max="10000" ng-model="maltQty" />
-            <span>g</span>
-        </p>
-
-        <p>
-            {{ 'Hop is ' + hopQty + 'g' }}
-        </p>
-
-        <p>
-            {{ 'Malt is ' + maltQty + 'g' }}
-        </p>
-    </div>
-
-    <script src="lib/angular.min.js"></script>
-    <script src="lib/recipeEditor.js"></script>
-    <script src="lib/recipeEditorCtrl.js"></script>
+                return hours + ':' + minutes + ':' + seconds;
+            },
+            pointSize: 0
+        });
+    });
+    </script>
+    <span id="date"></span>
 </body>
 
 </html>
