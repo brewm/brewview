@@ -8,8 +8,8 @@
 
     <!-- pretty json libs -->
     <script src="lib/underscore-min.js"></script>
+    <script src="lib/jquery-1.11.1.min.js"></script>
     <script src="lib/backbone-min.js"></script>
-    <script src="lib/jquery.min.js"></script>
     <script src="lib/pretty-json-min.js"></script>
 
     <!-- morris js libs -->
@@ -25,9 +25,11 @@
             <option value="">--choose--</option>
         </select>
 
-        <select ng-model="selectedRecipe" ng-options="recipe.name for recipe in selectedBeertypeRecipes" ng-change="recipeSelected(selectedRecipe)">
+        <select ng-model="selectedRecipe" ng-options="recipe.name for recipe in selectedBeertypeRecipes" ng-change="recipeSelected(selectedRecipe)" ng-hide="!selectedBeerType">
             <option value="">--choose--</option>
         </select>
+        </br>
+        <span id="result"></span>
 
         <!--<div id="tempChart" style="height: 500px;"></div>-->
 
@@ -71,6 +73,7 @@
         <script>
         function controller($scope, $http) {
             $scope.fullRecipe = "";
+            $scope.JSONViewResult = document.getElementById("result");
 
             //load beer types
             $http.get('http://192.168.1.110:3551/recipes')
@@ -95,8 +98,16 @@
                 $http.get('http://192.168.1.110:3551/recipe/' + escape(selectedRecipe.name))
                     .then(function(res) {
                         $scope.fullRecipe = res.data;
-
+                        $scope.refreshJSONView($scope.fullRecipe);
                     });
+            }
+
+            $scope.refreshJSONView = function(jsonObject) {
+                console.log(jsonObject);
+                $scope.node = new PrettyJSON.view.Node({
+                    el: $scope.JSONViewResult,
+                    data: jsonObject
+                });
             }
         }
         </script>
