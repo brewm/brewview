@@ -4,6 +4,7 @@
 <head>
     <link rel="stylesheet" type="text/css" href="css/morris-0.5.1.css">
     <link rel="stylesheet" type="text/css" href="css/pretty-json.css">
+    <link rel="stylesheet" type="text/css" href="css/layout.css">
 
 
     <!-- pretty json libs -->
@@ -20,98 +21,135 @@
 </head>
 
 <body>
-    <div ng-app="" ng-controller="controller">
-        <select ng-model="selectedBeerType" ng-options="beertype for beertype in beertypes" ng-change="beertypeSelected(selectedBeerType)">
-            <option value="">--choose--</option>
-        </select>
-
-        <select ng-model="selectedRecipe" ng-options="recipe.name for recipe in selectedBeertypeRecipes" ng-change="recipeSelected(selectedRecipe)" ng-hide="!selectedBeerType">
-            <option value="">--choose--</option>
-        </select>
-        </br>
-        <span id="result"></span>
-
-        <!--<div id="tempChart" style="height: 500px;"></div>-->
-
-        <!--<script type="text/javascript">
-        $.getJSON("http://192.168.1.110:3551/temperatures/100", function(x) {
-            data = x.records; // use data as a generic object 
-            var data;
-            var start = new Date(data[0].timestamp);
-            var chart = new Morris.Line({
-                // ID of the element in which to draw the chart.
-                element: 'tempChart',
-                // Chart data records -- each entry in this array corresponds to a point on
-                // the chart.
-                data: data,
-                // The name of the data record attribute that contains x-values.
-                xkey: 'timestamp',
-                // A list of names of data record attributes that contain y-values.
-                ykeys: ['temperature'],
-                // Labels for the ykeys -- will be displayed when you hover over the
-                // chart.
-                labels: ['Actual Temperature'],
-                postUnits: [' °C'],
-                lineColors: ['#000000'],
-                //events: ['2014-09-02 19:00:00', '2014-09-02 19:00:08'],
-                goals: [52, 68],
-                xLabelFormat: function(x) {
-                    var pad = '00';
-                    var elapsed = x - start;
-                    var hours = Math.floor(elapsed / 1000 / 60 / 60);
-                    var minutes = (pad + Math.floor(elapsed / 1000 / 60) % 60).slice(-pad.length);
-                    var seconds = (pad + Math.floor((elapsed / 1000) % 60)).slice(-pad.length);
-
-                    return hours + ':' + minutes + ':' + seconds;
-                },
-                pointSize: 0
-            });
-        });
-        </script>-->
-        <!--<span id="date"></span>-->
-
-        <script>
-        function controller($scope, $http) {
-            $scope.fullRecipe = "";
-            $scope.JSONViewResult = document.getElementById("result");
-
-            //load beer types
-            $http.get('http://192.168.1.110:3551/recipes')
-                .then(function(res) {
-                    $scope.recipes = res.data.records;
-                    $scope.beertypes = $scope.recipes.map(function(recipe) {
-                        return recipe.type;
-                    }).filter(function(v, i, a) {
-                        return a.indexOf(v) == i;
-                    })
-                });
-
-            $scope.beertypeSelected = function(selectedBeerType) {
-                $scope.selectedBeertypeRecipes = $scope.recipes.filter(function(v) {
-                    return v.type == $scope.selectedBeerType;
-                });
-            };
-
-            $scope.recipeSelected = function(selectedRecipe) {
-                //load the full recipe
-                console.log('url is: ' + 'http://192.168.1.110:3551/recipe/' + escape(selectedRecipe.name))
-                $http.get('http://192.168.1.110:3551/recipe/' + escape(selectedRecipe.name))
-                    .then(function(res) {
-                        $scope.fullRecipe = res.data;
-                        $scope.refreshJSONView($scope.fullRecipe);
-                    });
-            }
-
-            $scope.refreshJSONView = function(jsonObject) {
-                console.log(jsonObject);
-                $scope.node = new PrettyJSON.view.Node({
-                    el: $scope.JSONViewResult,
-                    data: jsonObject
-                });
-            }
-        }
-        </script>
+    <div id="bd" ng-app="" ng-controller="controller">
+        <div id="yui-main">
+            <div class="yui-b">
+                <div class="yui-gc">
+                    <div class="yui-u first">
+                        <div class="content">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="beerType">Beer type</label>
+                                    </td>
+                                    <td>
+                                        <select id="beerType" class="selectCombo" ng-model="selectedBeerType" ng-options="beertype for beertype in beertypes" ng-change="beertypeSelected(selectedBeerType)">
+                                            <option value="">--choose--</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr ng-hide="!selectedBeerType">
+                                    <td>
+                                        <label for="recipe" class="label">Recipe</label>
+                                    </td>
+                                    <td>
+                                        <select class="selectCombo" ng-model="selectedRecipe" ng-options="recipe.name for recipe in selectedBeertypeRecipes" ng-change="recipeSelected(selectedRecipe)">
+                                            <option value="">--choose--</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                        </div>
+                        </table>
+                    </div>
+                </div>
+                <div class="yui-u">
+                    <div class="content">
+                        <div style="height: 100%; overflow: scroll;">
+                            <div id="result" style="padding: 15px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui-b">
+            <div id="tempChart"></div>
+        </div>
     </div>
+    <div id="ft">
+        <div id="footer">Footer</div>
+    </div>
+
+    <script>
+    function controller($scope, $http) {
+        $scope.fullRecipe = "";
+        $scope.JSONViewResult = document.getElementById("result");
+
+        //load beer types
+        $http.get('http://192.168.1.110:3551/recipes')
+            .then(function(res) {
+                $scope.recipes = res.data.records;
+                $scope.beertypes = $scope.recipes.map(function(recipe) {
+                    return recipe.type;
+                }).filter(function(v, i, a) {
+                    return a.indexOf(v) == i;
+                })
+            });
+
+        $scope.beertypeSelected = function(selectedBeerType) {
+            $scope.selectedBeertypeRecipes = $scope.recipes.filter(function(v) {
+                return v.type == $scope.selectedBeerType;
+            });
+        };
+
+        $scope.recipeSelected = function(selectedRecipe) {
+            //load the full recipe
+            console.log('url is: ' + 'http://192.168.1.110:3551/recipe/' + escape(selectedRecipe.name))
+            $http.get('http://192.168.1.110:3551/recipe/' + escape(selectedRecipe.name))
+                .then(function(res) {
+                    $scope.fullRecipe = res.data;
+                    $scope.refreshJSONView($scope.fullRecipe);
+                });
+        }
+
+        $scope.refreshJSONView = function(jsonObject) {
+            console.log(jsonObject);
+            $scope.node = new PrettyJSON.view.Node({
+                el: $scope.JSONViewResult,
+                data: jsonObject
+            });
+        }
+    }
+    </script>
+
+    <!--<div  style="height: 500px;"></div>-->
+
+    <script type="text/javascript">
+    $.getJSON("http://192.168.1.110:3551/temperatures/10", function(x) {
+        data = x.records; // use data as a generic object 
+        var data;
+        var start = new Date(data[0].timestamp);
+        var chart = new Morris.Line({
+            // ID of the element in which to draw the chart.
+            element: 'tempChart',
+            // Chart data records -- each entry in this array corresponds to a point on
+            // the chart.
+            data: data,
+            // The name of the data record attribute that contains x-values.
+            xkey: 'timestamp',
+            // A list of names of data record attributes that contain y-values.
+            ykeys: ['temperature'],
+            // Labels for the ykeys -- will be displayed when you hover over the
+            // chart.
+            labels: ['Actual Temperature'],
+            postUnits: [' °C'],
+            lineColors: ['#000000'],
+            //events: ['2014-09-02 19:00:00', '2014-09-02 19:00:08'],
+            goals: [52, 68],
+            //xLabelFormat: function(x) {
+            //    var pad = '00';
+            //    var elapsed = x - start;
+            //    var hours = Math.floor(elapsed / 1000 / 60 / 60);
+            //    var minutes = (pad + Math.floor(elapsed / 1000 / 60) % 60).slice(-pad.length);
+            //    var seconds = (pad + Math.floor((elapsed / 1000) % 60)).slice(-pad.length);
+
+            //    return hours + ':' + minutes + ':' + seconds;
+            //},
+            pointSize: 0
+        });
+    });
+    </script>
+    <!--<span id="date"></span>-->
+
 </body>
 
 </html>
