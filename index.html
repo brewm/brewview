@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="css/pretty-json.css">
     <link rel="stylesheet" type="text/css" href="css/layout.css">
 
+    <script src="lib/spin.min.js"></script>
 
     <!-- pretty json libs -->
     <script src="lib/underscore-min.js"></script>
@@ -54,7 +55,7 @@
                 </div>
                 <div class="yui-u">
                     <div class="content">
-                        <div style="height: 100%; overflow: scroll;">
+                        <div style="height: 100%; overflow: scroll;" ng-hide="!selectedBeerType || !selectedRecipe">
                             <div id="result" style="padding: 15px;"></div>
                         </div>
                     </div>
@@ -65,9 +66,9 @@
             <div id="tempChart"></div>
         </div>
     </div>
-    <div id="ft">
+    <!--<div id="ft">
         <div id="footer">Footer</div>
-    </div>
+    </div>-->
 
     <script>
     function controller($scope, $http) {
@@ -92,8 +93,6 @@
         };
 
         $scope.recipeSelected = function(selectedRecipe) {
-            //load the full recipe
-            console.log('url is: ' + 'http://192.168.1.110:3551/recipe/' + escape(selectedRecipe.name))
             $http.get('http://192.168.1.110:3551/recipe/' + escape(selectedRecipe.name))
                 .then(function(res) {
                     $scope.fullRecipe = res.data;
@@ -114,11 +113,45 @@
     <!--<div  style="height: 500px;"></div>-->
 
     <script type="text/javascript">
-    $.getJSON("http://192.168.1.110:3551/temperatures/10", function(x) {
-        data = x.records; // use data as a generic object 
-        var data;
-        var start = new Date(data[0].timestamp);
-        var chart = new Morris.Line({
+    var spinnerOpts = {
+        lines: 11, // The number of lines to draw
+        length: 14, // The length of each line
+        width: 6, // The line thickness
+        radius: 10, // The radius of the inner circle
+        corners: 1, // Corner roundness (0..1)
+        rotate: 0, // The rotation offset
+        direction: 1, // 1: clockwise, -1: counterclockwise
+        color: '#000', // #rgb or #rrggbb or array of colors
+        speed: 1.6, // Rounds per second
+        trail: 73, // Afterglow percentage
+        shadow: true, // Whether to render a shadow
+        hwaccel: false, // Whether to use hardware acceleration
+        className: 'spinner', // The CSS class to assign to the spinner
+        zIndex: 2e9, // The z-index (defaults to 2000000000)
+        top: '50%', // Top position relative to parent
+        left: '50%' // Left position relative to parent
+    };
+    var spinnerTarget = document.getElementById('tempChart');
+    var spinner = new Spinner(spinnerOpts).spin(spinnerTarget);
+
+    var chart;
+    setInterval("refresh()", 3000);
+
+    var refresh = function() {
+        $.getJSON("http://192.168.1.110:3551/temperatures/100", function(x) {
+            var data = x.records; // use data as a generic object 
+            var start = new Date(data[0].timestamp);
+            if (typeof chart == "undefined") {
+                spinner.stop();
+                setTimeout(createChart(data), 3000);
+            } else {
+                chart.setData(data);
+            }
+        });
+    }
+
+    var createChart = function(data) {
+        chart = new Morris.Line({
             // ID of the element in which to draw the chart.
             element: 'tempChart',
             // Chart data records -- each entry in this array corresponds to a point on
@@ -134,7 +167,7 @@
             postUnits: [' °C'],
             lineColors: ['#000000'],
             //events: ['2014-09-02 19:00:00', '2014-09-02 19:00:08'],
-            goals: [52, 68],
+            //goals: [52, 68],
             //xLabelFormat: function(x) {
             //    var pad = '00';
             //    var elapsed = x - start;
@@ -144,9 +177,10 @@
 
             //    return hours + ':' + minutes + ':' + seconds;
             //},
-            pointSize: 0
+            pointSize: 4,
+            gridEnabled: true
         });
-    });
+    }
     </script>
     <!--<span id="date"></span>-->
 

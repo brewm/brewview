@@ -202,8 +202,7 @@ td {
 }
 .content {
     height: 300px;
-    background: #CCC8B3;
-    border-top: #FFFFFF 2px solid;
+    border: #000000 1px solid;
     margin: 0;
     padding: 0;
 }
@@ -215,22 +214,19 @@ td {
 }
 #secondary {
     height: 300px;
-    background: #F6F0E0;
-    border-top: #FFFFFF 2px solid;
+    border: #000000 1px solid;
     margin: 0;
     padding: 0;
 }
 #secondaryFull {
     height: 50px;
-    background-color: #CFB59F;
-    border-top: #FFFFFF 2px solid;
+    border: #000000 1px solid;
     margin: 0;
     padding: 0;
 }
 #footer {
     height: 50px;
-    background: #BFBD93;
-    border-top: #FFFFFF 2px solid;
+    border: #000000 1px solid;
     margin: 0;
     padding: 0;
 }
