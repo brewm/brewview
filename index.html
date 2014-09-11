@@ -71,12 +71,14 @@
     </div>-->
 
     <script>
+    var url = "http://conoyes.synology.me:3551";
+
     function controller($scope, $http) {
         $scope.fullRecipe = "";
         $scope.JSONViewResult = document.getElementById("result");
 
         //load beer types
-        $http.get('http://192.168.1.110:3551/recipes')
+        $http.get(url+'/recipes')
             .then(function(res) {
                 $scope.recipes = res.data.records;
                 $scope.beertypes = $scope.recipes.map(function(recipe) {
@@ -93,7 +95,7 @@
         };
 
         $scope.recipeSelected = function(selectedRecipe) {
-            $http.get('http://192.168.1.110:3551/recipe/' + escape(selectedRecipe.name))
+            $http.get(url+'/recipe/' + escape(selectedRecipe.name))
                 .then(function(res) {
                     $scope.fullRecipe = res.data;
                     $scope.refreshJSONView($scope.fullRecipe);
@@ -101,7 +103,6 @@
         }
 
         $scope.refreshJSONView = function(jsonObject) {
-            console.log(jsonObject);
             $scope.node = new PrettyJSON.view.Node({
                 el: $scope.JSONViewResult,
                 data: jsonObject
@@ -138,7 +139,7 @@
     setInterval("refresh()", 3000);
 
     var refresh = function() {
-        $.getJSON("http://192.168.1.110:3551/temperatures/100", function(x) {
+        $.getJSON(url + "/temperatures/100", function(x) {
             var data = x.records; // use data as a generic object 
             var start = new Date(data[0].timestamp);
             if (typeof chart == "undefined") {
