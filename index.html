@@ -2,79 +2,79 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-    <link rel="stylesheet" type="text/css" href="css/morris-0.5.1.css">
-    <link rel="stylesheet" type="text/css" href="css/pretty-json.css">
-    <link rel="stylesheet" type="text/css" href="css/layout.css">
+  <link rel="stylesheet" type="text/css" href="css/morris-0.5.1.css">
+  <link rel="stylesheet" type="text/css" href="css/pretty-json.css">
+  <link rel="stylesheet" type="text/css" href="css/layout.css">
 
-    <script src="lib/spin.min.js"></script>
+  <script src="lib/spin.min.js"></script>
 
-    <!-- pretty json libs -->
-    <script src="lib/underscore-min.js"></script>
-    <script src="lib/jquery-1.11.1.min.js"></script>
-    <script src="lib/backbone-min.js"></script>
-    <script src="lib/pretty-json-min.js"></script>
+  <!-- pretty json libs -->
+  <script src="lib/underscore-min.js"></script>
+  <script src="lib/jquery-1.11.1.min.js"></script>
+  <script src="lib/backbone-min.js"></script>
+  <script src="lib/pretty-json-min.js"></script>
 
-    <!-- morris js libs -->
-    <script src="lib/raphael-min.js"></script>
-    <script src="lib/morris.min.js"></script>
+  <!-- morris js libs -->
+  <script src="lib/raphael-min.js"></script>
+  <script src="lib/morris.min.js"></script>
 </head>
 
 <body>
-    <div id="bd" ng-app="indexApp" ng-controller="indexCtrl" data-ng-init="startChartRefresh()">
-        <div id="yui-main">
-            <div class="yui-b">
-                <div class="yui-gc">
-                    <div class="yui-u first">
-                        <div class="content">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label for="beerType">Beer type</label>
-                                    </td>
-                                    <td>
-                                        <select id="beerType" class="selectCombo" ng-model="selectedBeerType" ng-options="beertype for beertype in beertypes" ng-change="beertypeSelected(selectedBeerType)">
-                                            <option value="">--choose--</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr ng-hide="!selectedBeerType">
-                                    <td>
-                                        <label for="recipe" class="label">Recipe</label>
-                                    </td>
-                                    <td>
-                                        <select class="selectCombo" ng-model="selectedRecipe" ng-options="recipe.name for recipe in selectedBeertypeRecipes" ng-change="recipeSelected(selectedRecipe)">
-                                            <option value="">--choose--</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                        </div>
-                        </table>
-                    </div>
-                </div>
-                <div class="yui-u">
-                    <div class="content">
-                        <div style="height: 100%; overflow: scroll;" ng-hide="!selectedBeerType || !selectedRecipe">
-                            <div id="result" style="padding: 15px;"></div>
-                        </div>
-                    </div>
-                </div>
+  <div id="bd" ng-app="indexApp" ng-controller="indexCtrl" data-ng-init="startChartRefresh()">
+    <div id="yui-main">
+      <div class="yui-b">
+        <div class="yui-gc">
+          <div class="yui-u first">
+            <div class="content">
+              <table>
+                <tr>
+                  <td>
+                    <label for="beerType">Beer type</label>
+                  </td>
+                  <td>
+                    <select id="beerType" class="selectCombo" ng-model="selectedBeerType" ng-options="beertype for beertype in beertypes" ng-change="beertypeSelected(selectedBeerType)">
+                      <option value="">--choose--</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr ng-hide="!selectedBeerType">
+                  <td>
+                    <label for="recipe" class="label">Recipe</label>
+                  </td>
+                  <td>
+                    <select class="selectCombo" ng-model="selectedRecipe" ng-options="recipe.name for recipe in selectedBeertypeRecipes" ng-change="recipeSelected(selectedRecipe)">
+                      <option value="">--choose--</option>
+                    </select>
+                  </td>
+                </tr>
             </div>
+            </table>
+          </div>
         </div>
-        <div class="yui-b">
-            <div id="tempChart" ng-mouseover="disableChartRefresh();" ng-mouseleave="enableChartRefresh();"></div>
+        <div class="yui-u">
+          <div class="content">
+            <div style="height: 100%; overflow: scroll;" ng-hide="!selectedBeerType || !selectedRecipe">
+              <div id="result" style="padding: 15px;"></div>
+            </div>
+          </div>
         </div>
-        <!--<div id="ft">
+      </div>
+    </div>
+    <div class="yui-b">
+      <div id="tempChart" ng-mouseover="disableChartRefresh();" ng-mouseleave="enableChartRefresh();"></div>
+    </div>
+    <!--<div id="ft">
             <div id="footer">
                 <p ng-hide="isRefreshChartEnabled()">PAUSED</p>
             </div>
         </div>-->
-    </div>
+  </div>
 
-    <script type="text/javascript" src="lib/angular.min.js"></script>
-    <script type="text/javascript" src="js/indexApp.js"></script>
-    <script type="text/javascript" src="js/indexCtrl.js"></script>
+  <script type="text/javascript" src="lib/angular.min.js"></script>
+  <script type="text/javascript" src="js/indexApp.js"></script>
+  <script type="text/javascript" src="js/indexCtrl.js"></script>
 </body>
 
 </html>
