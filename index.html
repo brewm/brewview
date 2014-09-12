@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+
     <link rel="stylesheet" type="text/css" href="css/morris-0.5.1.css">
     <link rel="stylesheet" type="text/css" href="css/pretty-json.css">
     <link rel="stylesheet" type="text/css" href="css/layout.css">
@@ -17,12 +19,10 @@
     <!-- morris js libs -->
     <script src="lib/raphael-min.js"></script>
     <script src="lib/morris.min.js"></script>
-
-    <script src="lib/angular.min.js"></script>
 </head>
 
 <body>
-    <div id="bd" ng-app="" ng-controller="controller">
+    <div id="bd" ng-app="indexApp" ng-controller="indexCtrl" data-ng-init="startChartRefresh()">
         <div id="yui-main">
             <div class="yui-b">
                 <div class="yui-gc">
@@ -63,128 +63,18 @@
             </div>
         </div>
         <div class="yui-b">
-            <div id="tempChart"></div>
+            <div id="tempChart" ng-mouseover="disableChartRefresh();" ng-mouseleave="enableChartRefresh();"></div>
         </div>
+        <!--<div id="ft">
+            <div id="footer">
+                <p ng-hide="isRefreshChartEnabled()">PAUSED</p>
+            </div>
+        </div>-->
     </div>
-    <!--<div id="ft">
-        <div id="footer">Footer</div>
-    </div>-->
 
-    <script>
-    var url = "http://conoyes.synology.me:3551";
-
-    function controller($scope, $http) {
-        $scope.fullRecipe = "";
-        $scope.JSONViewResult = document.getElementById("result");
-
-        //load beer types
-        $http.get(url+'/recipes')
-            .then(function(res) {
-                $scope.recipes = res.data.records;
-                $scope.beertypes = $scope.recipes.map(function(recipe) {
-                    return recipe.type;
-                }).filter(function(v, i, a) {
-                    return a.indexOf(v) == i;
-                })
-            });
-
-        $scope.beertypeSelected = function(selectedBeerType) {
-            $scope.selectedBeertypeRecipes = $scope.recipes.filter(function(v) {
-                return v.type == $scope.selectedBeerType;
-            });
-        };
-
-        $scope.recipeSelected = function(selectedRecipe) {
-            $http.get(url+'/recipe/' + escape(selectedRecipe.name))
-                .then(function(res) {
-                    $scope.fullRecipe = res.data;
-                    $scope.refreshJSONView($scope.fullRecipe);
-                });
-        }
-
-        $scope.refreshJSONView = function(jsonObject) {
-            $scope.node = new PrettyJSON.view.Node({
-                el: $scope.JSONViewResult,
-                data: jsonObject
-            });
-        }
-    }
-    </script>
-
-    <!--<div  style="height: 500px;"></div>-->
-
-    <script type="text/javascript">
-    var spinnerOpts = {
-        lines: 11, // The number of lines to draw
-        length: 14, // The length of each line
-        width: 6, // The line thickness
-        radius: 10, // The radius of the inner circle
-        corners: 1, // Corner roundness (0..1)
-        rotate: 0, // The rotation offset
-        direction: 1, // 1: clockwise, -1: counterclockwise
-        color: '#000', // #rgb or #rrggbb or array of colors
-        speed: 1.6, // Rounds per second
-        trail: 73, // Afterglow percentage
-        shadow: true, // Whether to render a shadow
-        hwaccel: false, // Whether to use hardware acceleration
-        className: 'spinner', // The CSS class to assign to the spinner
-        zIndex: 2e9, // The z-index (defaults to 2000000000)
-        top: '50%', // Top position relative to parent
-        left: '50%' // Left position relative to parent
-    };
-    var spinnerTarget = document.getElementById('tempChart');
-    var spinner = new Spinner(spinnerOpts).spin(spinnerTarget);
-
-    var chart;
-    setInterval("refresh()", 3000);
-
-    var refresh = function() {
-        $.getJSON(url + "/temperatures/100", function(x) {
-            var data = x.records; // use data as a generic object 
-            var start = new Date(data[0].timestamp);
-            if (typeof chart == "undefined") {
-                spinner.stop();
-                setTimeout(createChart(data), 3000);
-            } else {
-                chart.setData(data);
-            }
-        });
-    }
-
-    var createChart = function(data) {
-        chart = new Morris.Line({
-            // ID of the element in which to draw the chart.
-            element: 'tempChart',
-            // Chart data records -- each entry in this array corresponds to a point on
-            // the chart.
-            data: data,
-            // The name of the data record attribute that contains x-values.
-            xkey: 'timestamp',
-            // A list of names of data record attributes that contain y-values.
-            ykeys: ['temperature'],
-            // Labels for the ykeys -- will be displayed when you hover over the
-            // chart.
-            labels: ['Actual Temperature'],
-            postUnits: [' °C'],
-            lineColors: ['#000000'],
-            //events: ['2014-09-02 19:00:00', '2014-09-02 19:00:08'],
-            //goals: [52, 68],
-            //xLabelFormat: function(x) {
-            //    var pad = '00';
-            //    var elapsed = x - start;
-            //    var hours = Math.floor(elapsed / 1000 / 60 / 60);
-            //    var minutes = (pad + Math.floor(elapsed / 1000 / 60) % 60).slice(-pad.length);
-            //    var seconds = (pad + Math.floor((elapsed / 1000) % 60)).slice(-pad.length);
-
-            //    return hours + ':' + minutes + ':' + seconds;
-            //},
-            pointSize: 4,
-            gridEnabled: true
-        });
-    }
-    </script>
-    <!--<span id="date"></span>-->
-
+    <script type="text/javascript" src="lib/angular.min.js"></script>
+    <script type="text/javascript" src="js/indexApp.js"></script>
+    <script type="text/javascript" src="js/indexCtrl.js"></script>
 </body>
 
 </html>
