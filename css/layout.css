@@ -227,6 +227,7 @@ td {
 #footer {
   height: 50px;
   border: #000000 1px solid;
-  margin: 0;
+  margin: 5px;
   padding: 0;
+  text-align: center;
 }

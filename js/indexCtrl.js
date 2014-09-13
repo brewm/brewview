@@ -1,5 +1,31 @@
 app.controller('indexCtrl', ['$scope', '$http', '$interval',
   function($scope, $http, $interval) {
+    var timer;
+
+    var generateMashPlan = function(recipe, start) {
+      var plan = [];
+      var time = start;
+      var generatedRecord;
+
+      for (index = 0; index < recipe.mash_steps.length; ++index) {
+        generatedRecord = {
+          timestamp: time.getTime(),
+          temperature: recipe.mash_steps[index].temperature
+        };
+        plan.push(generatedRecord);
+
+        time = new Date(time.getTime() + recipe.mash_steps[index].interval * 60000);
+
+        generatedRecord = {
+          timestamp: time.getTime(),
+          temperature: recipe.mash_steps[index].temperature
+        };
+        plan.push(generatedRecord);
+      }
+
+      return plan;
+    }
+
     $scope.beertypeSelected = function(selectedBeerType) {
       $scope.selectedBeertypeRecipes = $scope.recipes.filter(function(v) {
         return v.type == $scope.selectedBeerType;
@@ -17,8 +43,19 @@ app.controller('indexCtrl', ['$scope', '$http', '$interval',
             newGoals.push(element.temperature);
           }
 
+          var plan = generateMashPlan($scope.fullRecipe, new Date());
           $scope.fullRecipe.mash_steps.forEach(getMashTemperatures);
           $scope.chart.options.goals = newGoals;
+          $interval.cancel(timer);
+          $scope.chart.options.smooth = false;
+          $scope.chart.options.ymin = plan[0].temperature - 3;
+          $scope.chart.options.ymax = plan[plan.length - 1].temperature + 3;
+          var events = [];
+          for (index = 0; index < plan.length; index += 2) {
+            events.push(plan[index].timestamp);
+          }
+          $scope.chart.events = events;
+          $scope.chart.setData(plan);
         });
     }
 
@@ -46,19 +83,14 @@ app.controller('indexCtrl', ['$scope', '$http', '$interval',
     }
 
     $scope.startChartRefresh = function() {
-      $interval($scope.refresh, 1500);
-    }
-
-    // TODO
-    $scope.generateBrewPlan = function(recipe, start) {
-      return new Date();
+      timer = $interval($scope.refresh, 1500);
     }
 
     $scope.refresh = function() {
       if ($scope.isRefreshChartEnabled()) {
         $.getJSON($scope.url + "/temperatures/100", function(x) {
           var data = x.records; // use data as a generic object
-          var start = new Date(data[0].timestamp);
+          $scope.currentTemperature = data[data.length - 1].temperature;
           if (typeof $scope.chart == "undefined") {
             $scope.spinner.stop();
             $scope.createChart(data);
@@ -85,7 +117,7 @@ app.controller('indexCtrl', ['$scope', '$http', '$interval',
         labels: ['Actual Temperature'],
         xLabels: 'minute',
         postUnits: [' °C'],
-        lineColors: ['#000000'],
+        lineColors: ['#000000', '#FF0000'],
         //events: ['2014-09-02 19:00:00', '2014-09-02 19:00:08'],
         goals: [0],
         //xLabelFormat: function(x) {
@@ -103,15 +135,19 @@ app.controller('indexCtrl', ['$scope', '$http', '$interval',
         hoverCallback: function(index, options, content, row) {
           return (new Date(row.timestamp)).toLocaleTimeString() + "   " + row.temperature + " °C";
         },
-        ymax: 80
+        ymax: 85,
+        ymin: 10,
+        eventStrokeWidth: 3,
+        goalStrokeWidth: 3
       });
     }
 
     // brewmmer url prefix
-    $scope.url = "http://conoyes.synology.me:3551";
+    $scope.url = 'http://conoyes.synology.me:3551';
     $scope.refreshChartEnabled = true;
-    $scope.fullRecipe = "";
+    $scope.fullRecipe = '';
     $scope.JSONViewResult = document.getElementById("result");
+    $scope.currentTemperature = '';
 
     // loader variables
     $scope.spinnerOpts = {

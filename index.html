@@ -71,11 +71,13 @@
     <div class="yui-b">
       <div id="tempChart" ng-mouseover="disableChartRefresh();" ng-mouseleave="enableChartRefresh();"></div>
     </div>
-    <!--<div id="ft">
-            <div id="footer">
-                <p ng-hide="isRefreshChartEnabled()">PAUSED</p>
-            </div>
-        </div>-->
+    <div id="ft" ng-hide="!currentTemperature">
+      <div id="footer">
+        <span>{{ currentTemperature }} °C</span>
+        </br>
+        <span ng-hide="refreshChartEnabled" style="color: #FF0000;">Chart refresh disabled</span>
+      </div>
+    </div>
   </div>
 </body>
 
