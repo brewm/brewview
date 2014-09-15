@@ -5,10 +5,16 @@ http://developer.yahoo.net/yui/license.txt
 version: 2.2.2
 */
 
+@font-face {
+    font-family: brewmFont;
+    src: url(ChunkfiveEx.ttf);
+}
+
 /* for all templates and grids */
 
 body {
   text-align: left;
+  font-family: brewmFont;
 }
 td {
   padding: 10px;
